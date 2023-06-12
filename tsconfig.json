@@ -1,0 +1,24 @@
+// {
+//     "compilerOptions": {
+//       "target": "es5",
+//       "module": "commonjs",   
+//       "lib": [
+//         "es2015",
+//         "dom"
+//       ],    
+//       "types": [
+//         "node",
+//         "ethers"
+//       ],   
+//       "outDir": "dist",  
+//       "strict": true,
+//       "esModuleInterop": true,   
+//       "moduleResolution": "node",
+//       "resolveJsonModule": true,
+//       "forceConsistentCasingInFileNames": true   
+//     },
+//     "include": [
+//       "src/**/*.ts",    
+//       "test/**/*.ts"  
+//     ]   
+//   }
