@@ -1,5 +1,3 @@
-
-const { TokenClass } = require("typescript")
 const { ethers } = require("hardhat")//import ethers from hardhat
 const { expect } = require("chai") 
 
@@ -7,8 +5,6 @@ const { expect } = require("chai")
 const tokens = (n) => { //Arrow functions are convenient defining short functions.
     return ethers.utils.parseUnits(n.toString(), 'ether')
 }
-
-
 
 describe('Token', () => {
     let token, accounts, deployer, receiver, exchange
@@ -19,14 +15,19 @@ describe('Token', () => {
         token = await Token.deploy('Jarvis', 'JVC', 1000000)//deploy it,get the name 
     
         accounts = await ethers.getSigners()
+        //who create and deploy his token
         deployer = accounts[0]
+        //who set allowance to the spender to spend receiver's token(maybe spender had pay for that)
         receiver = accounts[1]
+        //spender, who maybe paid money and get his token from receiver
         exchange = accounts[2]
     })
+
+    //deployer deploy his token to the blockchain
     describe('Deployment', () => {
         const name = 'Jarvis'
         const symbol = 'JVC'
-        const decimals = '18'
+        const decimals = '18' //wei
         const totalSupply = tokens('1000000')
 
         it('has correct name', async () => {
@@ -64,7 +65,7 @@ describe('Token', () => {
         describe('Success', () => {
             beforeEach(async () => {
                 amount = tokens(100)
-                let transaction = await token.connect(deployer).transfer(receiver.address, amount)
+                transaction = await token.connect(deployer).transfer(receiver.address, amount)
                 result = await transaction.wait()
             })
             it('Transfers token balances', async() => {

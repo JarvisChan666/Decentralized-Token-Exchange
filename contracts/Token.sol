@@ -9,9 +9,14 @@ contract Token {
     uint256 public decimals = 18;//dont change
     uint256 public totalSupply;
 
+    //mapping like a key-value database
     //track balance put address, and show balance number
     mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256 )) public allowance;
+
+    //msg.sender(receiver) approve an allowance(kuan xian) for spender
+    //Then spender call tranferFrom() to spend receiver's tokens 
+    //Store the authorization amount of each authorizer for each address
+    mapping(address => mapping(address => uint256)) public allowance;
     
     event Transfer(
         address indexed from , 
@@ -35,6 +40,11 @@ contract Token {
         symbol = _symbol;
         totalSupply = _totalSupply * (10**decimals);
        
+       //msg.sender is deployer's address, 
+       //they are initial token holder
+       //also can be receiver
+
+       //The total supply is minted to the deployer's address
         balanceOf[msg.sender] = totalSupply;
     }
 
@@ -61,7 +71,10 @@ contract Token {
     returns(bool success) 
     {
         require(_spender != address(0));
-
+    /*
+    allowance' refers specifically to the amount of tokens
+    that a token holder authorizes another address to spend.
+    */
         allowance[msg.sender][_spender] = _value;
         
         emit Approval(msg.sender, _spender, _value);
