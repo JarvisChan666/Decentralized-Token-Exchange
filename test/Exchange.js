@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
+const { connect } = require('react-redux');
 const { composeWithDevTools } = require('redux-devtools-extension');
 
 const tokens = (n) => {
@@ -12,14 +13,17 @@ describe('Exchange', () => {
     const feePercent = 10
 
   beforeEach(async () => {
-
-    //get the contract 
-  
+    const Exchange = await ethers.getContractFactory('Exchange')
+    const Token = await ethers.getContractFactory('Token')
+    
+    token1 = await Token.deploy('Dapp University', 'DApp')
+    
+    
     accounts = await ethers.getSigners()
     deployer = accounts[0]
     feeAccount = accounts[1]
-
-    const Exchange = await ethers.getContractFactory('Exchange')
+    user1 = accounts[2]
+    
     exchange = await Exchange.deploy(feeAccount.address, feePercent)
   })
 
@@ -32,5 +36,21 @@ describe('Exchange', () => {
     it('tracks the fee percent', async () => {
         expect(await exchange.feePercent()).to.equal(feePercent)
       })
+  })
+
+  describe('Depositing Tokens', () => {
+    let transaction, result
+    let amount = tokens(10)
+    beforeEach(async () => {
+        transaction = await exchange,connect(user1).depositToken(token1.address, amount)
+      })
+
+    describe('Success', () => {
+
+    })
+
+    describe('Faliure', () => {
+
+    })
   })
 })
