@@ -1,86 +1,105 @@
-// SPDX-License-Identifier: MIT 
-pragma solidity ^0.8.9;
+//SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
 
-import "../node_modules/hardhat/console.sol";
+import "hardhat/console.sol";
 
+/// @title Simple Token Contract
+/// @author Jarvis
 contract Token {
     string public name;
     string public symbol;
-    uint256 public decimals = 18;//dont change
+    uint256 public decimals = 18;
     uint256 public totalSupply;
 
-    //mapping like a key-value database
-    //track balance put address, and show balance number
+    /// @notice Stores the balances of each address
     mapping(address => uint256) public balanceOf;
 
-    //msg.sender(receiver) approve an allowance(kuan xian) for spender
-    //Then spender call tranferFrom() to spend receiver's tokens 
-    //Store the authorization amount of each authorizer for each address
-    mapping(address => mapping(address => uint256)) public allowance;
     
+   /// @notice Stores approval amounts on behalf of others
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    /// @notice Emitted when tokens are transferred
+    /// @param from The address which you sent the tokens from
+    /// @param to The address which you transferred the tokens to 
+    /// @param value The amount of tokens transferred
     event Transfer(
-        address indexed from , 
-        address indexed to, 
-        uint256 value 
+        address indexed from,
+        address indexed to,
+        uint256 value
     );
 
     event Approval(
-        address indexed owner , 
-        address indexed spender, 
-        uint256 value 
+        address indexed owner,
+        address indexed spender,
+        uint256 value
     );
 
-    //send token
-
-
-    constructor
-    (string memory _name, string memory _symbol, uint256 _totalSupply
+    /// @param _name Name of the token       
+    /// @param _symbol Symbol of the token
+    /// @param _totalSupply Total supply of tokens
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _totalSupply
     ) {
-        name = _name; 
+        name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply * (10**decimals);
-       
-       //msg.sender is deployer's address, 
-       //they are initial token holder
-       //also can be receiver
-
-       //The total supply is minted to the deployer's address
-        balanceOf[msg.sender] = totalSupply;
+        balanceOf[msg.sender] = totalSupply;//msg.sender is deployer
     }
 
-    function transfer(address _to, uint256 _value) 
-        public 
-        returns (bool success) 
+    function transfer(address _to, uint256 _value)
+        public
+        returns (bool success)
     {
-    
         require(balanceOf[msg.sender] >= _value);
-        require(_to != address(0));
 
-    
-        balanceOf[msg.sender]  = balanceOf[msg.sender] - _value;
+        _transfer(msg.sender, _to, _value);
 
-        balanceOf[_to] = balanceOf[_to] + _value;
-        
-        emit Transfer(msg.sender, _to, _value);
-        
         return true;
     }
-    
-    function approve(address _spender, uint256 _value) 
-    public 
-    returns(bool success) 
+
+    function _transfer(
+        address _from,
+        address _to,
+        uint256 _value
+    ) internal {
+        require(_to != address(0));
+
+        balanceOf[_from] = balanceOf[_from] - _value;
+        balanceOf[_to] = balanceOf[_to] + _value;
+
+        emit Transfer(_from, _to, _value);
+    }
+
+    function approve(address _spender, uint256 _value)
+        public
+        returns(bool success)
     {
         require(_spender != address(0));
-    /*
-    allowance' refers specifically to the amount of tokens
-    that a token holder authorizes another address to spend.
-    */
+
         allowance[msg.sender][_spender] = _value;
-        
+
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
-    
+
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        public
+        returns (bool success)
+    {
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowance[_from][msg.sender]);
+
+        allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value;
+
+        _transfer(_from, _to, _value);
+
+        return true;
+    }
+
 }
-
-
