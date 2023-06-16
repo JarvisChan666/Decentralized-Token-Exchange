@@ -15,7 +15,7 @@ contract Exchange {
         feeAccount = _feeAccount;
         feePercent = _feePercent;
     }
-    
+   
     function depositToken(address _token, uint256 _amount) public {
        
         require(Token(_token).transferFrom(msg.sender, address(this), _amount));
@@ -25,6 +25,10 @@ contract Exchange {
         emit Deposit(_token, msg.sender, _amount, tokens[_token][msg.sender]);
     }
 
+    function withdrawToken(address _token, uint256 _amount) public {
+        Token(_token).transfer(msg.sender, _amount);
+        
+    }
     function balanceOf(address _token, address _user) public view returns (uint256) {
         return tokens[_token][_user];
     }
