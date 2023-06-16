@@ -10,16 +10,36 @@ contract Exchange {
     mapping(address => mapping(address => uint256)) public tokens;
     mapping(uint256 => _Order) public orders;
     uint256 public orderCount;
-    event Deposit(address token, address user, uint256 amount, uint256 balance);
-    event Withdraw(address token, address user, uint256 amount, uint256 balance);
+    event Deposit(
+        address token, 
+        address user, 
+        uint256 amount, 
+        uint256 balance
+    );
+    event Withdraw(
+        address token, 
+        address user, 
+        uint256 amount, 
+        uint256 balance
+    );
     
-    struct _Order {
+    event Order (
         uint256 id,//unique identifier for order
         address user,// user who made order 
         address tokenGet,//address of the token they receive
         uint256 amountGet,//amount they receive
         address tokenGive,//address of tokenthey give
         uint256 amountGive,//amount they give
+        uint256 timestamp
+    );
+
+    struct _Order {
+        uint256 id;//unique identifier for order
+        address user;// user who made order 
+        address tokenGet;//address of the token they receive
+        uint256 amountGet;//amount they receive
+        address tokenGive;//address of tokenthey give
+        uint256 amountGive;//amount they give
         uint256 timestamp;
     }
 
@@ -57,19 +77,12 @@ contract Exchange {
         address _tokenGet, 
         uint256 _amountGet, 
         address _tokenGive, 
-        address _amountGive
+        uint256 _amountGive
         ) public {
-
-        // uint256 id;//unique identifier for order
-        // address user;// user who made order 
-        // address tokenGet;//address of the token they receive
-        // uint256 amountGet;//amount they receive
-        // address tokenGive;//address of tokenthey give
-        // uint256 amountGive;//amount they give
-        // uint256 timestamp;
-
+            //require token balance
+        require(balanceOf(_tokenGive, msg.sender) == _amountGive);
+            //instantiate new order
         orderCount = orderCount + 1;
-
          orders[orderCount] = _Order(
             orderCount, // id
             msg.sender, // user
@@ -78,6 +91,17 @@ contract Exchange {
             _tokenGive, // tokenGive
             _amountGive, //amountGive
             block.timestamp      
+        );
+
+        //emit event
+        emit Order (
+            orderCount, // id
+            msg.sender, // user
+            _tokenGet, // tokenGet
+            _amountGet, //amountGet
+            _tokenGive, // tokenGive
+            _amountGive, //amountGive
+            block.timestamp  
         );
     }
 }
