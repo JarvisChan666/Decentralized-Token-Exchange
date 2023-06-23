@@ -178,7 +178,6 @@ describe('Exchange', () => {
       it('emit an Order event', async () => {
         const event = result.events[0]
         expect(event.event).to.equal('Order')
-
         const args = event.args
         expect(args.id).to.equal(1)
         expect(args.user).to.equal(user1.address)
