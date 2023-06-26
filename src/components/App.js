@@ -7,21 +7,32 @@ import {
   loadProvider, 
   loadNetworks, 
   loadAccounts,
-  loadToken } from '../store/interaction';
+  loadTokens,
+  loadExchange
+} from '../store/interaction';
 
 function App() {
  
   const dispatch = useDispatch();
   const loadBlockchainData = async () => {
-    await loadAccounts(dispatch)
-
     // Connect ethers to blockchain
     const provider = await loadProvider(dispatch)
+
+    // Fetch current network's chainId (eg: hardhat 31337)
     const chainId  = await loadNetworks(provider, dispatch);
    
+    // Fetch current account & balance from MetaMask
+    await loadAccounts(provider, dispatch)
 
-    // Token Smart Contract
-    await loadToken(provider, config[chainId].DApp.address, dispatch) 
+    // Load token Smart Contract
+    const DApp = config[chainId].DApp
+    const mETH = config[chainId].mETH
+    await loadTokens(provider, [DApp.address, mETH.address] , dispatch) 
+    
+    // load Exchange Smart Contract
+    const exchange = config[chainId].exchange
+    await loadExchange(provider, exchange.address, dispatch)
+  
   }
 
   useEffect(() => {
@@ -63,3 +74,6 @@ function App() {
 }
 
 export default App;
+
+
+
